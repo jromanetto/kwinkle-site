@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kwinkle — Tile-Matching Strategy Game</title>
+  <meta name="description" content="Kwinkle is a tile-matching strategy game for iOS and Android. Match colors and shapes, play against AI or friends online, and climb the leaderboard.">
+  <style>
+    :root {
+      --bg: #0f1117;
+      --card: #1a1d27;
+      --text: #e8eaf0;
+      --muted: #9aa0b0;
+      --accent: #f5b942;
+      --accent2: #4ecdc4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    main {
+      flex: 1;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 64px 24px;
+      text-align: center;
+    }
+    .logo {
+      font-size: 56px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .tagline { font-size: 20px; color: var(--muted); margin-bottom: 40px; }
+    .hexes { font-size: 36px; letter-spacing: 8px; margin-bottom: 40px; }
+    .features {
+      display: grid;
+      gap: 16px;
+      text-align: left;
+      margin-bottom: 48px;
+    }
+    .feature {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+    .feature strong { color: var(--accent); }
+    .store-note {
+      color: var(--muted);
+      font-size: 15px;
+      margin-bottom: 48px;
+    }
+    .links a { color: var(--accent2); text-decoration: none; margin: 0 12px; }
+    .links a:hover { text-decoration: underline; }
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 class="logo">Kwinkle</h1>
+    <p class="tagline">Match colors. Match shapes. Master the board.</p>
+    <div class="hexes">🔴 🔷 🟡 🟢 🟣 🟠</div>
+    <div class="features">
+      <div class="feature"><strong>Two game modes</strong> — Kwinkle (hexagonal board) and Square (classic grid)</div>
+      <div class="feature"><strong>Smart AI opponents</strong> — three difficulty levels, from relaxed to ruthless</div>
+      <div class="feature"><strong>Online multiplayer</strong> — create a private room and challenge a friend with a 4-letter code</div>
+      <div class="feature"><strong>Leaderboards &amp; achievements</strong> — 15 badges to unlock and weekly rankings to conquer</div>
+    </div>
+    <p class="store-note">Coming soon to the App Store and Google Play.</p>
+    <p class="links">
+      <a href="/privacy/">Privacy Policy</a>
+      <a href="mailto:contact@kwinkle.org">Support</a>
+    </p>
+  </main>
+  <footer>© 2026 Kwinkle · contact@kwinkle.org</footer>
+</body>
+</html>
