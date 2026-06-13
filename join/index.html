@@ -57,22 +57,55 @@
       var codeEl = document.getElementById('code');
       var copiedEl = document.getElementById('copied');
       var openApp = document.getElementById('openApp');
+      var hint = document.getElementById('hint');
 
-      if (code.length === 4) {
-        codeEl.textContent = code;
-        // Lien universel : si l'app est installée, iOS/Android l'ouvre direct.
-        openApp.href = 'https://kwinkle.org/join/?c=' + code;
-        // Presse-papier : permet l'auto-join après une 1re installation.
-        var payload = 'KWINKLE:' + code;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(payload).then(function () {
-            copiedEl.textContent = '✓ Code copié — il sera proposé à l’ouverture de l’app';
-          }).catch(function () {});
-        }
-      } else {
+      var ua = navigator.userAgent || '';
+      var isIOS = /iPhone|iPad|iPod/i.test(ua);
+      var isAndroid = /Android/i.test(ua);
+
+      if (code.length !== 4) {
         codeEl.textContent = '—';
-        document.getElementById('hint').textContent = 'Lien d’invitation invalide. Demande un nouveau lien à ton ami.';
+        hint.textContent = 'Lien d’invitation invalide. Demande un nouveau lien à ton ami.';
         openApp.style.display = 'none';
+        return;
+      }
+
+      codeEl.textContent = code;
+
+      // Adapte les boutons store à la plateforme
+      if (isIOS) document.getElementById('playstore').style.display = 'none';
+      if (isAndroid) document.getElementById('appstore').style.display = 'none';
+
+      // IMPORTANT : depuis le navigateur in-app de WhatsApp, les universal links
+      // ne déclenchent PAS l'ouverture de l'app. Le scheme custom kwinkle://, lui,
+      // fonctionne. On tente donc le scheme (ouvre l'app si installée) ; si rien
+      // ne se passe, la personne voit la page d'invite + boutons store.
+      function openInApp() {
+        var schemeUrl = 'kwinkle://join?c=' + code;
+        // Android : intent avec fallback store intégré
+        if (isAndroid) {
+          window.location.href = 'intent://join?c=' + code +
+            '#Intent;scheme=kwinkle;package=org.kwinkle.app;' +
+            'S.browser_fallback_url=' + encodeURIComponent('https://play.google.com/store/apps/details?id=org.kwinkle.app') + ';end';
+          return;
+        }
+        window.location.href = schemeUrl;
+      }
+
+      openApp.addEventListener('click', function (e) {
+        e.preventDefault();
+        openInApp();
+      });
+
+      // Tentative auto une fois (si l'app est installée, elle s'ouvre direct)
+      setTimeout(openInApp, 400);
+
+      // Presse-papier : permet l'auto-join après une 1re installation (deferred)
+      var payload = 'KWINKLE:' + code;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(payload).then(function () {
+          copiedEl.textContent = '✓ Code copié — il sera proposé à l’ouverture de l’app';
+        }).catch(function () {});
       }
     })();
   </script>
