@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rejoins une partie Kwinkle</title>
+  <meta name="description" content="Un ami t'invite à jouer à Kwinkle, le jeu de stratégie de tuiles. Rejoins la partie !">
+  <!-- Open Graph (preview WhatsApp/iMessage) -->
+  <meta property="og:title" content="🎮 Un ami t'invite à jouer à Kwinkle !">
+  <meta property="og:description" content="Rejoins sa partie de Kwinkle — match les couleurs et les formes, en duel en temps réel.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kwinkle.org/join/">
+  <meta name="apple-itunes-app" content="app-id=6758212262">
+  <style>
+    :root { --bg:#0f1117; --card:#1a1d27; --text:#e8eaf0; --muted:#9aa0b0; --accent:#f5b942; --accent2:#4ecdc4; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; line-height:1.6; min-height:100vh; display:flex; flex-direction:column; }
+    main { flex:1; max-width:520px; margin:0 auto; padding:56px 24px; text-align:center; }
+    .logo { font-size:44px; font-weight:800; letter-spacing:-1px; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:4px; }
+    .tagline { color:var(--muted); margin-bottom:28px; }
+    .invite { background:var(--card); border-radius:16px; padding:28px 24px; margin-bottom:28px; }
+    .invite h1 { font-size:20px; margin-bottom:14px; }
+    .code-label { color:var(--muted); font-size:13px; text-transform:uppercase; letter-spacing:1px; }
+    .code { font-size:44px; font-weight:800; letter-spacing:8px; color:var(--accent); margin:6px 0 4px; font-variant-numeric:tabular-nums; }
+    .copied { color:var(--accent2); font-size:13px; height:18px; }
+    .open-btn { display:block; background:var(--accent2); color:#06231f; font-weight:700; text-decoration:none; padding:16px; border-radius:12px; margin-bottom:14px; font-size:16px; }
+    .stores { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .store { display:inline-block; background:var(--card); border:1px solid rgba(255,255,255,0.1); color:var(--text); text-decoration:none; padding:12px 18px; border-radius:12px; font-size:14px; }
+    .hint { color:var(--muted); font-size:13px; margin-top:22px; }
+    footer { text-align:center; padding:22px; color:var(--muted); font-size:12px; }
+    a.link { color:var(--accent2); }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="logo">Kwinkle</div>
+    <p class="tagline">Match colors. Match shapes. Master the board.</p>
+    <div class="invite">
+      <h1>🎮 Un ami t'invite à jouer !</h1>
+      <div class="code-label">Code de la partie</div>
+      <div class="code" id="code">····</div>
+      <div class="copied" id="copied"></div>
+    </div>
+    <a class="open-btn" id="openApp" href="#">▶ Ouvrir dans l'app</a>
+    <div class="stores">
+      <a class="store" id="appstore" href="https://apps.apple.com/app/id6758212262">📱 App Store</a>
+      <a class="store" id="playstore" href="https://play.google.com/store/apps/details?id=org.kwinkle.app">🤖 Google Play</a>
+    </div>
+    <p class="hint" id="hint">Installe Kwinkle, rouvre ce lien, et tu rejoindras la partie automatiquement.</p>
+  </main>
+  <footer>© 2026 Kwinkle · <a class="link" href="/">kwinkle.org</a></footer>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var code = (params.get('c') || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4);
+      var codeEl = document.getElementById('code');
+      var copiedEl = document.getElementById('copied');
+      var openApp = document.getElementById('openApp');
+
+      if (code.length === 4) {
+        codeEl.textContent = code;
+        // Lien universel : si l'app est installée, iOS/Android l'ouvre direct.
+        openApp.href = 'https://kwinkle.org/join/?c=' + code;
+        // Presse-papier : permet l'auto-join après une 1re installation.
+        var payload = 'KWINKLE:' + code;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(payload).then(function () {
+            copiedEl.textContent = '✓ Code copié — il sera proposé à l’ouverture de l’app';
+          }).catch(function () {});
+        }
+      } else {
+        codeEl.textContent = '—';
+        document.getElementById('hint').textContent = 'Lien d’invitation invalide. Demande un nouveau lien à ton ami.';
+        openApp.style.display = 'none';
+      }
+    })();
+  </script>
+</body>
+</html>
