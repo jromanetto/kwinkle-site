@@ -1,92 +1,464 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kwinkle — Tile-Matching Strategy Game</title>
-  <meta name="description" content="Kwinkle is a tile-matching strategy game for iOS and Android. Match colors and shapes, play against AI or friends online, and climb the leaderboard.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kwinkle — The hexagonal tile strategy game</title>
+  <meta name="description" content="Kwinkle: match colors and shapes on a hexagonal board. Play a 3-level AI, challenge friends online with a 4-letter code, and climb the leaderboard. iOS & Android." />
+  <meta name="theme-color" content="#0b1015" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/icon.png" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Kwinkle — The hexagonal tile strategy game" />
+  <meta property="og:description" content="Match colors and shapes. Play the AI or challenge friends online. iOS & Android." />
+  <meta property="og:url" content="https://kwinkle.org/" />
+  <meta property="og:image" content="https://kwinkle.org/icon.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Kwinkle" />
+  <meta name="twitter:description" content="The hexagonal tile strategy game. iOS & Android." />
+  <meta name="twitter:image" content="https://kwinkle.org/icon.png" />
+
   <style>
     :root {
-      --bg: #0f1117;
-      --card: #1a1d27;
-      --text: #e8eaf0;
-      --muted: #9aa0b0;
-      --accent: #f5b942;
-      --accent2: #4ecdc4;
+      --bg: #0b1015;
+      --bg2: #0f1620;
+      --text: #e8eef5;
+      --muted: #8a94a6;
+      --cyan: #2badee;
+      --cyan-d: #1a8bc4;
+      --gold: #ffd700;
+      --orange: #ff8c00;
+      --green: #32cd32;
+      --storm: #6a5acd;
+      --lunar: #c0c0ff;
+      --card: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.09);
+      --maxw: 1120px;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      line-height: 1.6;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
-    main {
-      flex: 1;
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 64px 24px;
-      text-align: center;
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    /* Ambient background glows */
+    .bg-glows { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.5; }
+    .blob.a { width: 540px; height: 540px; top: -160px; left: -120px; background: radial-gradient(circle, rgba(43,173,238,0.5), transparent 70%); }
+    .blob.b { width: 460px; height: 460px; top: 320px; right: -160px; background: radial-gradient(circle, rgba(106,90,205,0.42), transparent 70%); }
+    .blob.c { width: 520px; height: 520px; bottom: -200px; left: 30%; background: radial-gradient(circle, rgba(50,205,50,0.20), transparent 70%); }
+
+    .wrap { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+    /* Nav */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(11, 16, 21, 0.6);
+      border-bottom: 1px solid var(--border);
     }
-    .logo {
-      font-size: 56px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
+    .nav-in { display: flex; align-items: center; justify-content: space-between; height: 66px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: -0.3px; }
+    .brand-mark { width: 30px; height: 30px; border-radius: 8px; }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a.lnk { color: var(--muted); font-size: 15px; font-weight: 600; transition: color .2s; }
+    .nav-links a.lnk:hover { color: var(--text); }
+    @media (max-width: 760px) { .nav-links a.lnk { display: none; } }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-weight: 700; font-size: 15px; border-radius: 12px;
+      padding: 11px 18px; cursor: pointer; border: 1px solid transparent;
+      transition: transform .15s, box-shadow .2s, background .2s;
     }
-    .tagline { font-size: 20px; color: var(--muted); margin-bottom: 40px; }
-    .hexes { font-size: 36px; letter-spacing: 8px; margin-bottom: 40px; }
-    .features {
-      display: grid;
-      gap: 16px;
-      text-align: left;
-      margin-bottom: 48px;
-    }
-    .feature {
-      background: var(--card);
-      border-radius: 12px;
-      padding: 16px 20px;
-    }
-    .feature strong { color: var(--accent); }
-    .store-note {
-      color: var(--muted);
-      font-size: 15px;
-      margin-bottom: 48px;
-    }
-    .links a { color: var(--accent2); text-decoration: none; margin: 0 12px; }
-    .links a:hover { text-decoration: underline; }
-    footer {
-      text-align: center;
-      padding: 24px;
-      color: var(--muted);
-      font-size: 13px;
-    }
+    .btn-primary { background: linear-gradient(135deg, var(--cyan), var(--cyan-d)); color: #fff; box-shadow: 0 8px 28px rgba(43,173,238,0.35); }
+    .btn-ghost { background: var(--card); border-color: var(--border); color: var(--text); }
+
+    /* Hero */
+    .hero { padding: 84px 0 56px; }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; }
+    @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; } }
+    .pill { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--cyan);
+      background: rgba(43,173,238,0.1); border: 1px solid rgba(43,173,238,0.3); padding: 6px 13px; border-radius: 999px; margin-bottom: 22px; }
+    h1 { font-size: clamp(38px, 5.4vw, 62px); line-height: 1.04; font-weight: 850; letter-spacing: -1.5px; margin-bottom: 20px; }
+    .grad { background: linear-gradient(120deg, var(--cyan), #7fd5ff 40%, var(--lunar)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .lead { font-size: clamp(17px, 2vw, 20px); color: var(--muted); max-width: 540px; margin-bottom: 30px; }
+    @media (max-width: 900px) { .lead { margin-left: auto; margin-right: auto; } }
+    .cta-row { display: flex; gap: 14px; flex-wrap: wrap; }
+    @media (max-width: 900px) { .cta-row { justify-content: center; } }
+    .mini-feats { display: flex; gap: 22px; margin-top: 30px; flex-wrap: wrap; }
+    @media (max-width: 900px) { .mini-feats { justify-content: center; } }
+    .mini { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); font-weight: 600; }
+    .mini b { color: var(--text); }
+
+    /* Phone frame around demo */
+    .phone { width: 320px; max-width: 86vw; margin: 0 auto; border-radius: 40px; padding: 12px;
+      background: linear-gradient(160deg, #1b232e, #0c1218); border: 1px solid var(--border);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06); }
+    .phone-screen { border-radius: 30px; background: radial-gradient(120% 90% at 50% 30%, #13202b, #0a0e13); overflow: hidden; position: relative; }
+    .notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 110px; height: 22px; background: #000; border-radius: 14px; z-index: 5; }
+    .screen-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 6px; }
+    .score-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 5px 11px; min-width: 78px; }
+    .score-card .lbl { font-size: 9px; font-weight: 800; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+    .score-card .val { font-size: 18px; font-weight: 900; color: var(--cyan); }
+    .score-card.bot .val { color: var(--gold); }
+    .burst { position: absolute; top: 38%; left: 50%; transform: translate(-50%,-50%); z-index: 8;
+      font-weight: 900; font-size: 26px; letter-spacing: 1px;
+      background: linear-gradient(120deg, var(--gold), var(--orange)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+    /* Sections */
+    section.block { padding: 72px 0; }
+    .eyebrow { color: var(--cyan); font-weight: 800; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; text-align: center; }
+    h2 { font-size: clamp(28px, 3.6vw, 42px); font-weight: 820; letter-spacing: -1px; text-align: center; margin-bottom: 14px; }
+    .sub { color: var(--muted); text-align: center; max-width: 620px; margin: 0 auto 48px; font-size: 17px; }
+
+    .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    @media (max-width: 760px) { .modes { grid-template-columns: 1fr; } }
+    .mode-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; }
+    .mode-card .tag { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 1px; padding: 4px 10px; border-radius: 8px; margin-bottom: 14px; }
+    .tag.hex { color: #061018; background: var(--cyan); }
+    .tag.sq { color: #1a1100; background: var(--gold); }
+    .mode-card h3 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+    .mode-card p { color: var(--muted); font-size: 15px; }
+
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 880px) { .features { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 560px) { .features { grid-template-columns: 1fr; } }
+    .feat { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 24px; }
+    .feat .ico { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 22px; margin-bottom: 16px; background: rgba(43,173,238,0.12); border: 1px solid rgba(43,173,238,0.25); }
+    .feat h3 { font-size: 18px; font-weight: 800; margin-bottom: 7px; }
+    .feat p { color: var(--muted); font-size: 14.5px; }
+
+    .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+    @media (max-width: 900px) { .demo-grid { grid-template-columns: 1fr; } }
+    .step { display: flex; gap: 14px; margin-bottom: 22px; }
+    .step .n { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-weight: 900; color: var(--cyan); background: rgba(43,173,238,0.12); border: 1px solid rgba(43,173,238,0.28); }
+    .step h4 { font-size: 17px; font-weight: 800; margin-bottom: 2px; }
+    .step p { color: var(--muted); font-size: 14.5px; }
+
+    .cta-band { text-align: center; background: linear-gradient(160deg, rgba(43,173,238,0.14), rgba(106,90,205,0.12)); border: 1px solid var(--border); border-radius: 28px; padding: 56px 28px; }
+    .cta-band h2 { margin-bottom: 12px; }
+
+    footer { border-top: 1px solid var(--border); padding: 40px 0; margin-top: 40px; }
+    .foot-in { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 14px; }
+    .foot-links { display: flex; gap: 22px; }
+    .foot-links a:hover { color: var(--text); }
+
+    .noscript { max-width: 620px; margin: 80px auto; padding: 0 24px; text-align: center; }
   </style>
 </head>
 <body>
-  <main>
-    <h1 class="logo">Kwinkle</h1>
-    <p class="tagline">Match colors. Match shapes. Master the board.</p>
-    <div class="hexes">🔴 🔷 🟡 🟢 🟣 🟠</div>
-    <div class="features">
-      <div class="feature"><strong>Two game modes</strong> — Kwinkle (hexagonal board) and Square (classic grid)</div>
-      <div class="feature"><strong>Smart AI opponents</strong> — three difficulty levels, from relaxed to ruthless</div>
-      <div class="feature"><strong>Online multiplayer</strong> — create a private room and challenge a friend with a 4-letter code</div>
-      <div class="feature"><strong>Leaderboards &amp; achievements</strong> — 15 badges to unlock and weekly rankings to conquer</div>
+  <div class="bg-glows"><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div></div>
+  <div id="root"></div>
+
+  <noscript>
+    <div class="noscript">
+      <h1>Kwinkle</h1>
+      <p>The hexagonal tile strategy game — match colors and shapes, play the AI or challenge friends online. Coming soon to the App Store and Google Play.</p>
+      <p style="margin-top:16px"><a href="/privacy/" style="color:#2badee">Privacy</a> · <a href="mailto:contact@kwinkle.org" style="color:#2badee">Support</a></p>
     </div>
-    <p class="store-note">Coming soon to the App Store and Google Play.</p>
-    <p class="links">
-      <a href="/privacy/">Privacy Policy</a>
-      <a href="mailto:contact@kwinkle.org">Support</a>
-    </p>
-  </main>
-  <footer>© 2026 Kwinkle · contact@kwinkle.org</footer>
+  </noscript>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@18.3.1",
+      "react/": "https://esm.sh/react@18.3.1/",
+      "react-dom": "https://esm.sh/react-dom@18.3.1",
+      "react-dom/": "https://esm.sh/react-dom@18.3.1/",
+      "framer-motion": "https://esm.sh/framer-motion@11.3.19?external=react,react-dom",
+      "htm": "https://esm.sh/htm@3.1.1"
+    }
+  }
+  </script>
+  <script type="module">
+    import React, { useState, useEffect } from "react";
+    import { createRoot } from "react-dom/client";
+    import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+    import htm from "htm";
+    const html = htm.bind(React.createElement);
+    const M = motion;
+
+    const COL = { cyan: "#2badee", gold: "#ffd700", orange: "#ff8c00", green: "#32cd32", storm: "#6a5acd", lunar: "#c0c0ff" };
+
+    // ---------- SVG tile (rounded hexagon + glyph), reused everywhere ----------
+    function hexPoints(cx, cy, r) {
+      const pts = [];
+      for (const a of [90, 150, 210, 270, 330, 30]) {
+        const rad = (a * Math.PI) / 180;
+        pts.push([cx + r * Math.cos(rad), cy - r * Math.sin(rad)]);
+      }
+      return pts;
+    }
+    function shade(hex, f) {
+      const n = parseInt(hex.slice(1), 16);
+      const r = Math.round(((n >> 16) & 255) * f), g = Math.round(((n >> 8) & 255) * f), b = Math.round((n & 255) * f);
+      return `rgb(${r},${g},${b})`;
+    }
+    function Glyph({ kind, cx, cy, r }) {
+      const w = "#ffffff";
+      if (kind === "star") {
+        const p = [];
+        for (let i = 0; i < 10; i++) {
+          const ang = ((-90 + i * 36) * Math.PI) / 180;
+          const rr = i % 2 === 0 ? r : r * 0.42;
+          p.push(`${cx + rr * Math.cos(ang)},${cy + rr * Math.sin(ang)}`);
+        }
+        return html`<polygon points=${p.join(" ")} fill=${w} />`;
+      }
+      if (kind === "diamond")
+        return html`<polygon points=${`${cx},${cy - r} ${cx + r * 0.82},${cy} ${cx},${cy + r} ${cx - r * 0.82},${cy}`} fill=${w} />`;
+      if (kind === "sparkle") {
+        const p = [];
+        for (let i = 0; i < 8; i++) {
+          const ang = (i * 45 * Math.PI) / 180;
+          const rr = i % 2 === 0 ? r : r * 0.34;
+          p.push(`${cx + rr * Math.cos(ang)},${cy + rr * Math.sin(ang)}`);
+        }
+        return html`<polygon points=${p.join(" ")} fill=${w} />`;
+      }
+      if (kind === "wave")
+        return html`<path d=${`M ${cx - r} ${cy} Q ${cx - r / 2} ${cy - r * 0.7}, ${cx} ${cy} T ${cx + r} ${cy}`} stroke=${w} stroke-width=${r * 0.34} fill="none" stroke-linecap="round" />`;
+      return null; // ring handled by Tile
+    }
+    function Tile({ x, y, s, color, glyph }) {
+      const pts = hexPoints(x, y, s).map((p) => p.join(",")).join(" ");
+      const base = hexPoints(x, y + s * 0.09, s).map((p) => p.join(",")).join(" ");
+      return html`
+        <g>
+          <polygon points=${base} fill=${shade(color, 0.55)} />
+          <polygon points=${pts} fill=${color} stroke="rgba(255,255,255,0.45)" stroke-width=${s * 0.03} />
+          ${glyph === "ring"
+            ? html`<g><circle cx=${x} cy=${y} r=${s * 0.5} fill="#fff" /><circle cx=${x} cy=${y} r=${s * 0.26} fill=${color} /></g>`
+            : html`<${Glyph} kind=${glyph} cx=${x} cy=${y} r=${s * 0.5} />`}
+        <//>`;
+    }
+
+    // axial -> pixel (pointy-top)
+    function axial(q, r, s) { return { x: s * Math.sqrt(3) * (q + r / 2), y: s * 1.5 * r }; }
+
+    const SEQ = [
+      { q: 0, r: 0, color: COL.cyan, glyph: "star", pts: 4 },
+      { q: 1, r: 0, color: COL.orange, glyph: "star", pts: 6 },
+      { q: 2, r: 0, color: COL.green, glyph: "star", pts: 8 },
+      { q: 0, r: 1, color: COL.cyan, glyph: "ring", pts: 5 },
+      { q: 0, r: 2, color: COL.cyan, glyph: "diamond", pts: 9 },
+      { q: -1, r: 1, color: COL.gold, glyph: "sparkle", pts: 7 },
+      { q: 2, r: 1, color: COL.storm, glyph: "ring", pts: 6, qwirkle: true },
+      { q: 1, r: 2, color: COL.green, glyph: "wave", pts: 12 },
+    ];
+
+    function BoardDemo() {
+      const [n, setN] = useState(0);
+      const [you, setYou] = useState(0);
+      const [bot, setBot] = useState(0);
+      const [qw, setQw] = useState(false);
+      useEffect(() => {
+        let i = 0, you0 = 0, bot0 = 0;
+        const id = setInterval(() => {
+          if (i >= SEQ.length) {
+            setTimeout(() => { setN(0); setYou(0); setBot(0); i = 0; you0 = 0; bot0 = 0; }, 1600);
+            i = SEQ.length + 1; // guard against double reset
+            return;
+          }
+          if (i > SEQ.length) return;
+          const t = SEQ[i];
+          i += 1; setN(i);
+          if (i % 2 === 1) { you0 += t.pts; setYou(you0); } else { bot0 += t.pts; setBot(bot0); }
+          if (t.qwirkle) { setQw(true); setTimeout(() => setQw(false), 1100); }
+        }, 780);
+        return () => clearInterval(id);
+      }, []);
+
+      const s = 26;
+      const placed = SEQ.slice(0, n).map((t) => ({ ...t, ...axial(t.q, t.r, s) }));
+      const allPos = SEQ.map((t) => axial(t.q, t.r, s));
+      const minX = Math.min(...allPos.map((p) => p.x)) - s, maxX = Math.max(...allPos.map((p) => p.x)) + s;
+      const minY = Math.min(...allPos.map((p) => p.y)) - s, maxY = Math.max(...allPos.map((p) => p.y)) + s;
+      const vb = `${minX} ${minY} ${maxX - minX} ${maxY - minY}`;
+
+      return html`
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="notch"></div>
+            <div class="screen-head" style=${{ paddingTop: "26px" }}>
+              <div class="score-card"><div class="lbl">You</div><div class="val">${you}</div></div>
+              <div class="score-card bot"><div class="lbl">AI</div><div class="val">${bot}</div></div>
+            </div>
+            <div style=${{ position: "relative", padding: "6px 14px 22px" }}>
+              <${AnimatePresence}>
+                ${qw ? html`<${M.div} key="qw" className="burst"
+                  initial=${{ opacity: 0, scale: 0.5, y: 10 }} animate=${{ opacity: 1, scale: 1, y: 0 }}
+                  exit=${{ opacity: 0, scale: 1.3 }}>QWIRKLE!<//>` : null}
+              <//>
+              <svg viewBox=${vb} style=${{ width: "100%", height: "260px" }}>
+                ${SEQ.map((t, i) => {
+                  const p = axial(t.q, t.r, s);
+                  const pts = hexPoints(p.x, p.y, s).map((a) => a.join(",")).join(" ");
+                  return html`<polygon key=${"e" + i} points=${pts} fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.06)" stroke-width="1" />`;
+                })}
+                <${AnimatePresence}>
+                  ${placed.map((t, i) => html`
+                    <${M.g} key=${"t" + i}
+                      initial=${{ opacity: 0, scale: 0.2 }}
+                      animate=${{ opacity: 1, scale: 1 }}
+                      transition=${{ type: "spring", stiffness: 320, damping: 18 }}
+                      style=${{ transformOrigin: `${t.x}px ${t.y}px` }}>
+                      <${Tile} x=${t.x} y=${t.y} s=${s} color=${t.color} glyph=${t.glyph} />
+                    <//>`)}
+                <//>
+              </svg>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // now=true: plays on mount (above-the-fold); otherwise on scroll-in-view.
+    // (framer-motion doesn't always fire whileInView for content already visible
+    //  at mount, so the hero animates directly.)
+    function FadeUp({ children, delay = 0, now = false }) {
+      const t = { duration: 0.55, delay, ease: [0.16, 1, 0.3, 1] };
+      if (now)
+        return html`<${M.div} initial=${{ opacity: 0, y: 26 }} animate=${{ opacity: 1, y: 0 }} transition=${t}>${children}<//>`;
+      return html`<${M.div} initial=${{ opacity: 0, y: 26 }} whileInView=${{ opacity: 1, y: 0 }}
+        viewport=${{ once: true, margin: "-60px" }} transition=${t}>${children}<//>`;
+    }
+
+    function Nav() {
+      return html`<nav><div class="wrap nav-in">
+        <a class="brand" href="#top"><img class="brand-mark" src="/icon.png" alt="" /> Kwinkle</a>
+        <div class="nav-links">
+          <a class="lnk" href="#modes">Modes</a>
+          <a class="lnk" href="#features">Features</a>
+          <a class="lnk" href="#demo">Demo</a>
+          <${M.a} whileHover=${{ scale: 1.04 }} whileTap=${{ scale: 0.97 }} class="btn btn-primary" href="#download">Download</${M.a}>
+        </div>
+      </div></nav>`;
+    }
+
+    function Hero() {
+      const { scrollY } = useScroll();
+      const y = useTransform(scrollY, [0, 400], [0, -30]);
+      return html`<header id="top" class="hero"><div class="wrap hero-grid">
+        <div>
+          <${FadeUp} now=${true}><div class="pill">◆ Strategy game · iOS & Android</div><//>
+          <${FadeUp} now=${true} delay=${0.05}><h1>Match the colors.<br/>Match the shapes.<br/><span class="grad">Master the board.</span></h1><//>
+          <${FadeUp} now=${true} delay=${0.1}><p class="lead">Kwinkle reinvents the tile game on a hexagonal board. Place your pieces, build lines, trigger Qwirkles — solo against the AI or head-to-head with friends.</p><//>
+          <${FadeUp} now=${true} delay=${0.15}>
+            <div class="cta-row">
+              <${M.a} whileHover=${{ scale: 1.04 }} whileTap=${{ scale: 0.97 }} class="btn btn-primary" href="#download">Download the app</${M.a}>
+              <${M.a} whileHover=${{ scale: 1.04 }} whileTap=${{ scale: 0.97 }} class="btn btn-ghost" href="#demo">See the demo</${M.a}>
+            </div>
+            <div class="mini-feats">
+              <div class="mini">✦ <b>2 game modes</b></div>
+              <div class="mini">🤖 <b>3 AI levels</b></div>
+              <div class="mini">🌐 <b>Online multiplayer</b></div>
+            </div>
+          <//>
+        </div>
+        <${M.div} style=${{ y }}>
+          <${FadeUp} now=${true} delay=${0.1}><${BoardDemo} /><//>
+        <//>
+      </div></header>`;
+    }
+
+    function Modes() {
+      return html`<section id="modes" class="block"><div class="wrap">
+        <${FadeUp}><div class="eyebrow">Two ways to play</div><h2>One game, two boards</h2>
+        <p class="sub">The signature hexagonal board, or the classic rules on a square grid.</p><//>
+        <div class="modes">
+          <${FadeUp}><div class="mode-card">
+            <span class="tag hex">HEX</span><h3>Kwinkle</h3>
+            <p>Hexagonal board with chain combos and bonus cells — Rift (+1) and Sanctuary (+2). More directions, more strategy.</p>
+          </div><//>
+          <${FadeUp} delay=${0.08}><div class="mode-card">
+            <span class="tag sq">CLASSIC</span><h3>Square</h3>
+            <p>The original rules on a square grid. Complete a line of 6 to grab the +6 bonus. Pure, tense, addictive.</p>
+          </div><//>
+        </div>
+      </div></section>`;
+    }
+
+    const FEATS = [
+      { i: "🤖", t: "3 AI levels", d: "From relaxed to ruthless: the opponent matches your level, from beginner to strategist." },
+      { i: "🌐", t: "Online multiplayer", d: "Create a private room and challenge a friend with a 4-letter code — shareable in one tap on WhatsApp." },
+      { i: "📊", t: "Leaderboard & dashboard", d: "Top players, average scores, win rate, streaks and records. Climb to the top every week." },
+      { i: "🏆", t: "15 achievements", d: "Challenges for every play style, synced with Game Center on iOS." },
+      { i: "✨", t: "Qwirkles & combos", d: "Complete a full line to trigger a Qwirkle and send your score soaring." },
+      { i: "🔒", t: "Play offline", d: "No connection? Solo mode against the AI works anywhere, anytime." },
+    ];
+    function Features() {
+      return html`<section id="features" class="block"><div class="wrap">
+        <${FadeUp}><div class="eyebrow">It's all in there</div><h2>Built to keep you playing</h2>
+        <p class="sub">From a quick solo round to a fierce duel, Kwinkle has the depth it takes.</p><//>
+        <div class="features">
+          ${FEATS.map((f, i) => html`<${FadeUp} key=${i} delay=${(i % 3) * 0.06}>
+            <div class="feat"><div class="ico">${f.i}</div><h3>${f.t}</h3><p>${f.d}</p></div>
+          <//>`)}
+        </div>
+      </div></section>`;
+    }
+
+    function DemoSection() {
+      const steps = [
+        ["1", "Place a tile", "Draw 6 tiles. Place them by matching color or shape with the neighbors."],
+        ["2", "Build lines", "The longer your line, the more you score. Every tile in a line counts."],
+        ["3", "Trigger a Qwirkle", "Complete a line of 6 different attributes and pocket the bonus."],
+        ["4", "Beat the AI or your friends", "Play solo, or create a room and invite someone with a 4-letter code."],
+      ];
+      return html`<section id="demo" class="block"><div class="wrap">
+        <${FadeUp}><div class="eyebrow">In action</div><h2>Easy to learn, hard to put down</h2>
+        <p class="sub">Watch a game come together, tile by tile.</p><//>
+        <div class="demo-grid">
+          <${FadeUp}><${BoardDemo} /><//>
+          <div>
+            ${steps.map((st, i) => html`<${FadeUp} key=${i} delay=${i * 0.05}>
+              <div class="step"><div class="n">${st[0]}</div><div><h4>${st[1]}</h4><p>${st[2]}</p></div></div>
+            <//>`)}
+          </div>
+        </div>
+      </div></section>`;
+    }
+
+    function CTA() {
+      return html`<section id="download" class="block"><div class="wrap">
+        <${FadeUp}><div class="cta-band">
+          <h2>Ready to place your first tile?</h2>
+          <p class="sub" style=${{ marginBottom: "28px" }}>Coming soon to the App Store and Google Play. Leave your email to get notified at launch.</p>
+          <div class="cta-row" style=${{ justifyContent: "center" }}>
+            <${M.a} whileHover=${{ scale: 1.04 }} whileTap=${{ scale: 0.97 }} class="btn btn-primary" href="mailto:contact@kwinkle.org?subject=Notify%20me%20about%20the%20Kwinkle%20launch">Notify me at launch</${M.a}>
+            <${M.a} whileHover=${{ scale: 1.04 }} whileTap=${{ scale: 0.97 }} class="btn btn-ghost" href="#top">Replay the demo</${M.a}>
+          </div>
+        </div><//>
+      </div></section>`;
+    }
+
+    function Footer() {
+      return html`<footer><div class="wrap foot-in">
+        <div>© 2026 Kwinkle · contact@kwinkle.org</div>
+        <div class="foot-links">
+          <a href="/privacy/">Privacy</a>
+          <a href="mailto:contact@kwinkle.org">Support</a>
+        </div>
+      </div></footer>`;
+    }
+
+    function App() {
+      return html`<${React.Fragment}>
+        <${Nav} /><${Hero} /><${Modes} /><${Features} /><${DemoSection} /><${CTA} /><${Footer} />
+      <//>`;
+    }
+
+    createRoot(document.getElementById("root")).render(html`<${App} />`);
+  </script>
 </body>
 </html>
