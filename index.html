@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kwinkle — The hexagonal tile strategy game</title>
-  <meta name="description" content="Kwinkle: match colors and shapes on a hexagonal board. Play a 3-level AI, challenge friends online with a 4-letter code, and climb the leaderboard. iOS & Android." />
+  <meta name="description" content="Kwinkle: match colors and shapes on a hexagonal board. Play a 3-level AI, challenge friends online with a 4-letter code, and climb the leaderboard. Out now on the App Store." />
   <meta name="theme-color" content="#0b1015" />
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/icon.png" />
@@ -12,12 +12,12 @@
   <!-- Open Graph / Twitter -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Kwinkle — The hexagonal tile strategy game" />
-  <meta property="og:description" content="Match colors and shapes. Play the AI or challenge friends online. iOS & Android." />
+  <meta property="og:description" content="Match colors and shapes. Play the AI or challenge friends online. Out now on the App Store." />
   <meta property="og:url" content="https://kwinkle.org/" />
   <meta property="og:image" content="https://kwinkle.org/icon.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Kwinkle" />
-  <meta name="twitter:description" content="The hexagonal tile strategy game. iOS & Android." />
+  <meta name="twitter:description" content="The hexagonal tile strategy game. Out now on the App Store." />
   <meta name="twitter:image" content="https://kwinkle.org/icon.png" />
 
   <style>
@@ -163,7 +163,8 @@
   <noscript>
     <div class="noscript">
       <h1>Kwinkle</h1>
-      <p>The hexagonal tile strategy game — match colors and shapes, play the AI or challenge friends online. Coming soon to the App Store and Google Play.</p>
+      <p>The hexagonal tile strategy game — match colors and shapes, play the AI or challenge friends online. Available now on the App Store.</p>
+      <p style="margin-top:16px"><a href="https://apps.apple.com/app/kwinkle/id6758212262" style="color:#2badee">Download on the App Store</a></p>
       <p style="margin-top:16px"><a href="/privacy/" style="color:#2badee">Privacy</a> · <a href="mailto:contact@kwinkle.org" style="color:#2badee">Support</a></p>
     </div>
   </noscript>
@@ -187,6 +188,7 @@
     import htm from "htm";
     const html = htm.bind(React.createElement);
     const M = motion;
+    const APP_STORE = "https://apps.apple.com/app/kwinkle/id6758212262";
 
     const COL = { cyan: "#2badee", gold: "#ffd700", orange: "#ff8c00", green: "#32cd32", storm: "#6a5acd", lunar: "#c0c0ff" };
 
@@ -298,7 +300,7 @@
               <${AnimatePresence}>
                 ${qw ? html`<${M.div} key="qw" className="burst"
                   initial=${{ opacity: 0, scale: 0.5, y: 10 }} animate=${{ opacity: 1, scale: 1, y: 0 }}
-                  exit=${{ opacity: 0, scale: 1.3 }}>QWIRKLE!<//>` : null}
+                  exit=${{ opacity: 0, scale: 1.3 }}>KWINKLE!<//>` : null}
               <//>
               <svg viewBox=${vb} style=${{ width: "100%", height: "260px" }}>
                 ${SEQ.map((t, i) => {
@@ -340,7 +342,7 @@
           <a class="lnk" href="#modes">Modes</a>
           <a class="lnk" href="#features">Features</a>
           <a class="lnk" href="#demo">Demo</a>
-          <${M.a} whileHover=${{ scale: 1.04 }} whileTap=${{ scale: 0.97 }} class="btn btn-primary" href="#download">Download</${M.a}>
+          <${M.a} whileHover=${{ scale: 1.04 }} whileTap=${{ scale: 0.97 }} class="btn btn-primary" href=${APP_STORE} target="_blank" rel="noopener">Download</${M.a}>
         </div>
       </div></nav>`;
     }
@@ -350,12 +352,12 @@
       const y = useTransform(scrollY, [0, 400], [0, -30]);
       return html`<header id="top" class="hero"><div class="wrap hero-grid">
         <div>
-          <${FadeUp} now=${true}><div class="pill">◆ Strategy game · iOS & Android</div><//>
+          <${FadeUp} now=${true}><div class="pill">◆ Out now on the App Store</div><//>
           <${FadeUp} now=${true} delay=${0.05}><h1>Match the colors.<br/>Match the shapes.<br/><span class="grad">Master the board.</span></h1><//>
-          <${FadeUp} now=${true} delay=${0.1}><p class="lead">Kwinkle reinvents the tile game on a hexagonal board. Place your pieces, build lines, trigger Qwirkles — solo against the AI or head-to-head with friends.</p><//>
+          <${FadeUp} now=${true} delay=${0.1}><p class="lead">Kwinkle reinvents the tile game on a hexagonal board. Place your pieces, build lines, trigger Kwinkles — solo against the AI or head-to-head with friends.</p><//>
           <${FadeUp} now=${true} delay=${0.15}>
             <div class="cta-row">
-              <${M.a} whileHover=${{ scale: 1.04 }} whileTap=${{ scale: 0.97 }} class="btn btn-primary" href="#download">Download the app</${M.a}>
+              <${M.a} whileHover=${{ scale: 1.04 }} whileTap=${{ scale: 0.97 }} class="btn btn-primary" href=${APP_STORE} target="_blank" rel="noopener">Download on the App Store</${M.a}>
               <${M.a} whileHover=${{ scale: 1.04 }} whileTap=${{ scale: 0.97 }} class="btn btn-ghost" href="#demo">See the demo</${M.a}>
             </div>
             <div class="mini-feats">
@@ -393,7 +395,7 @@
       { i: "🌐", t: "Online multiplayer", d: "Create a private room and challenge a friend with a 4-letter code — shareable in one tap on WhatsApp." },
       { i: "📊", t: "Leaderboard & dashboard", d: "Top players, average scores, win rate, streaks and records. Climb to the top every week." },
       { i: "🏆", t: "15 achievements", d: "Challenges for every play style, synced with Game Center on iOS." },
-      { i: "✨", t: "Qwirkles & combos", d: "Complete a full line to trigger a Qwirkle and send your score soaring." },
+      { i: "✨", t: "Kwinkles & combos", d: "Complete a full line to trigger a Kwinkle and send your score soaring." },
       { i: "🔒", t: "Play offline", d: "No connection? Solo mode against the AI works anywhere, anytime." },
     ];
     function Features() {
@@ -412,7 +414,7 @@
       const steps = [
         ["1", "Place a tile", "Draw 6 tiles. Place them by matching color or shape with the neighbors."],
         ["2", "Build lines", "The longer your line, the more you score. Every tile in a line counts."],
-        ["3", "Trigger a Qwirkle", "Complete a line of 6 different attributes and pocket the bonus."],
+        ["3", "Trigger a Kwinkle", "Complete a line of 6 different attributes and pocket the bonus."],
         ["4", "Beat the AI or your friends", "Play solo, or create a room and invite someone with a 4-letter code."],
       ];
       return html`<section id="demo" class="block"><div class="wrap">
@@ -433,9 +435,9 @@
       return html`<section id="download" class="block"><div class="wrap">
         <${FadeUp}><div class="cta-band">
           <h2>Ready to place your first tile?</h2>
-          <p class="sub" style=${{ marginBottom: "28px" }}>Coming soon to the App Store and Google Play. Leave your email to get notified at launch.</p>
+          <p class="sub" style=${{ marginBottom: "28px" }}>Available now on the App Store, free. Android coming soon.</p>
           <div class="cta-row" style=${{ justifyContent: "center" }}>
-            <${M.a} whileHover=${{ scale: 1.04 }} whileTap=${{ scale: 0.97 }} class="btn btn-primary" href="mailto:contact@kwinkle.org?subject=Notify%20me%20about%20the%20Kwinkle%20launch">Notify me at launch</${M.a}>
+            <${M.a} whileHover=${{ scale: 1.04 }} whileTap=${{ scale: 0.97 }} class="btn btn-primary" href=${APP_STORE} target="_blank" rel="noopener">Download on the App Store</${M.a}>
             <${M.a} whileHover=${{ scale: 1.04 }} whileTap=${{ scale: 0.97 }} class="btn btn-ghost" href="#top">Replay the demo</${M.a}>
           </div>
         </div><//>
