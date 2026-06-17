@@ -255,7 +255,7 @@
       { q: 0, r: 1, color: COL.cyan, glyph: "ring", pts: 5 },
       { q: 0, r: 2, color: COL.cyan, glyph: "diamond", pts: 9 },
       { q: -1, r: 1, color: COL.gold, glyph: "sparkle", pts: 7 },
-      { q: 2, r: 1, color: COL.storm, glyph: "ring", pts: 6, qwirkle: true },
+      { q: 2, r: 1, color: COL.storm, glyph: "ring", pts: 6, kwinkle: true },
       { q: 1, r: 2, color: COL.green, glyph: "wave", pts: 12 },
     ];
 
@@ -276,7 +276,7 @@
           const t = SEQ[i];
           i += 1; setN(i);
           if (i % 2 === 1) { you0 += t.pts; setYou(you0); } else { bot0 += t.pts; setBot(bot0); }
-          if (t.qwirkle) { setQw(true); setTimeout(() => setQw(false), 1100); }
+          if (t.kwinkle) { setQw(true); setTimeout(() => setQw(false), 1100); }
         }, 780);
         return () => clearInterval(id);
       }, []);
